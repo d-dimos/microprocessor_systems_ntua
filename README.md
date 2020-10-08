@@ -1,2 +1,2 @@
-## microcomputer_systems
-Solutions to the Microcomputer Systems lecture series held by NTUA during the 6th semester of the ECE undergraduate course
+# Microcomputer Systems
+This repository contains exercise set solutions to the Microcomputer Systems lectureκηβ  series held by NTUA during the 6th semester of the ECE undergraduate course
