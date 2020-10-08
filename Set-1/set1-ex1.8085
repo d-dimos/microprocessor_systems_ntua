@@ -1,0 +1,14 @@
+	   MVI B,01H
+	   LDA 2000H
+	   CPI 00H
+	   JZ FIRST
+THIRD:    RAR
+	   JC SECOND
+	   INR B
+	   JNZ THIRD
+SECOND:   MOV A,B
+FIRST:    CMA
+	   STA 3000H
+	   RST 1
+
+	   END

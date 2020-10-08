@@ -1,0 +1,94 @@
+;================== MAIN PROGRAM ====================
+
+	IN 10H		; άρση προστασίας μνήμης
+START:	MVI A,FEH	; αρχικοποίηση του Α
+	
+	CALL LEFT	; εκκίνηση της αριστερής κίνησης
+	CALL RIGHT	; εκκίνηση της δεξιάς κίνησης
+	JMP START	; επανάληψη άνευ συνθήκης
+
+; ====== DELAY ROUTINE ======
+
+DEL:	MOV D,A	; ρουτίνα πρόκλησης καθυστέρησης
+	LXI B,3FFFH	; που είναι συνάρτηση της τιμής του Β
+LOO:	DCX B
+	MOV A,B
+	ORA C
+	JNZ LOO
+	MOV A,D
+	RET
+
+; ====== 1st LSB CHECK ======
+
+1LSB:	MOV D,A	; σώσιμο του Α		
+	LDA 2000H	; φόρτωση εισόδου
+	RAR		; δεξιά περιστροφή μέσω κρατουμένου
+	MOV A,D	; επαναφορά Α
+	RET		; τώρα αν CY = 1 => LSB dip switch = ON
+			; αλλιώς LSB dip switch = OFF
+
+; ====== 2nd LSB CHECK ======
+
+2LSB:	MOV D,A	; ομοίως με την 1LSB, αλλά για το 2ο LSB dip switch
+	LDA 2000H
+	RAR
+	RAR
+	MOV A,D
+	RET		
+
+; ====== OUTPUT ROUTINE ======
+
+OUT:	MVI E,00H	; αρχικοποίηση Ε με 0
+	CALL 2LSB	; τοποθέτηση 2ου LSB dip switch στο CY
+	JNC GO		; αν CY = 0 τότε προώθηση του Α κατευθείαν στην έξοδο
+	CPI FEH	; αν ο Α θα προκαλέσει ούτως ή αλλως άναμα του LSB LED
+	JZ GO		; τότε προώθησή του κατευθείαν στην έξοδο
+	DCR A		; μειώνουμε (προσωρινά) τον Α κατά 1
+			; για να έχει LSB = 0
+	MVI E,01H	; E <= 1
+GO:	STA 3000H
+	MOV D,A	; σώσιμο Α
+	MOV A,E	; Α <= Ε
+	CPI 01H	; αν Α = 1, δηλ. δεν κάναμε άλμα στο GO
+			; και το Α είναι το "πραγματικό"
+	JNZ N_DCR	; προσπέραση της αύξησης του D = A
+	INR D		; αλλιώς αύξησε το D για να πάρει τη σωστή τιμή
+N_DCR: MOV A,D	; επαναφορά Α
+	RET
+
+; ====== CIRCLE ROUTINE ======
+
+CIRC:	MVI A,FEH	; αρχικοποίηση Α
+AG:	CALL OUT	; προώθηση στην έξοδο
+	CALL DEL	; πρόκληση καθυστέρησης
+	RLC
+	CALL 1LSB	; έλεγχος για το LSB dip switch
+	JC START	; αν LSB dip switch = OFF => επανεκκίνηση προγράμματος
+	JMP AG		; επανάληψη
+
+; ====== RIGHT ROTATION ROUTINE ======
+
+RIGHT:	CPI FEH	; ομοίως με την LEFT ROTATION ROUTINE
+	JZ ENDR	; αλλά δεξιόστροφη περιστροφή
+	CALL 1LSB
+	JNC CIRC
+	CALL OUT
+	CALL DEL
+	RRC
+	JMP RIGHT
+ENDR:	RET
+
+; ====== LEFT ROTATION ROUTINE ======
+
+LEFT:	CPI 7FH	; σύγκριση του Α με την τελική τιμή της περιστροφής
+	JZ ENDL	; αν ισούνται τότε τέλος αριστερής περιστροφής
+	CALL 1LSB	; έλεγχος για το LSB dip switch
+	JNC CIRC	; αν LSB dip switch = ON => κυκλική κίνηση
+	CALL OUT	; προώθηση στην έξοδο
+	CALL DEL	; πρόκληση καθυστέρησης
+	RLC		; αριστερά περιστροφή
+	JMP LEFT	; επανάληψη
+ENDL:	RET
+
+; ====================================
+	END

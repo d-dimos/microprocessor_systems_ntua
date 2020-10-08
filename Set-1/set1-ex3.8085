@@ -1,0 +1,49 @@
+; ================ MAIN PROGRAM ================
+
+START:	LDA 2000H	; we get out input in A
+	
+	CALL FIX	; fix input so we get mod 100
+	
+	CALL MSD	; we get the MSD and put it in D
+			; while the LSD remains in A
+	
+	MOV E,A	; save LSD in E
+	MOV A,D	; store MSD in A
+
+	RRC		; rotate right four times so we get the MSD 
+	RRC		; in higher positions
+	RRC
+	RRC
+	
+	ADD E		; so we get our result
+
+	CMA		; reverse A so we have positive logic	
+	STA 3000H
+	JMP START
+
+; ================ ROUTINE TO GET MOD 100 ================
+
+FIX:	CPI C8H	; compare input with 200
+	JC NEXT 	; if it's smaller then check with 100
+	SUI 64H	; else subtract 100
+NEXT:	CPI 64H	; compare input with 100
+	JC END		; if it's smaller then we are ok
+	SUI 64H	; else subtract 100
+END:	RET
+
+; ================ ROUTINE TO GET MSD ================
+
+MSD:	MVI D,00H
+AG:	CPI 0AH	
+	JC DONE	; if A is smaller than 10 then we have MSD
+	SUI 0AH	; else subtract 10
+	INR D		; and increase the decades count D
+	JMP AG
+DONE: 	RET 
+
+; =====================================================
+	END
+
+
+
+	
