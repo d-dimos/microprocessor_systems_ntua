@@ -1,0 +1,173 @@
+; Συστήματα Μικροϋπολογιστών - Ροή Υ [6ο Εξάμηνο]
+; Δημήτρης Δήμος - 031 17 165
+; 2η Ομάδα Ασκήσεων
+; 3η ’σκηση (ερώτημα iii)
+
+
+; ============= ΚΥΡΙΟ ΠΡΟΓΡΑΜΜΑ (ΕΚΚΙΝΗΣΗ) ================
+
+START:	IN 10H		; άρση προστασίας μνήμης
+	LXI H,0A00H	; 0Α00H = η αρχή του μπλοκ αποθήκευσης
+	MVI B,04H	; απλός επαναλήπτης
+L1:	MVI M,10H	; αποθήκευσε "κενο" (4 φορές)
+	INX H
+	DCR B
+	JNZ L1
+	
+; ================== ΕΛΕΓΧΟΣ ΓΡΑΜΜΗΣ 0 =====================
+LINE0:	MVI A,FEH	; πόρτα σάρωσης = 11111110 - επιλογή γραμμής
+	STA 2800H	
+	LDA 1800H	; διάβασε τις στήλες των πλήκτρων 
+	ANI 07H	; κρατάμε μόνο τα 3 LSB (περιέχουν την πληροφορία)	
+
+	MVI C,86H	; C = πιθανός κωδικός
+	CPI 06H	; A ?= 00000110 (δηλ. πατήθηκε το κουμπί της
+			; 1ης στήλης [INSTR_STEP])
+	JZ SHOW	; αν ναι, προώθησέ τον κωδικό του
+			; στην έξοδο των 7-segment display
+
+	MVI C,85H	; ομοίως για όλα τα πιθανά κουμπιά 
+	CPI 05H	; A ?= 00000101 (δηλ. πατήθηκε το κουμπί της
+			; 2ης στήλης [FETCH PC])
+	JZ SHOW	 	
+
+			; αγνoούμε το κουμπί HDWR_STEP
+
+; ================== ΕΛΕΓΧΟΣ ΓΡΑΜΜΗΣ 1 =====================
+LINE1:	MVI A,FDH
+	STA 2800H	
+	LDA 1800H	 
+	ANI 07H		
+
+	MVI C,84H	
+	CPI 06H	; RUN	
+	JZ SHOW	
+	MVI C,80H	
+	CPI 05H	; FETCH_REG
+	JZ SHOW	 
+	MVI C,82H	 
+	CPI 03H	; FETCH_ADDRS
+	JZ SHOW
+
+; ================== ΕΛΕΓΧΟΣ ΓΡΑΜΜΗΣ 2 =====================
+LINE2:	MVI A,FBH
+	STA 2800H	
+	LDA 1800H	 
+	ANI 07H		
+
+	MVI C,00H	
+	CPI 06H	; 0
+	JZ SHOW	
+	MVI C,83H	
+	CPI 05H	; STORE/INCR
+	JZ SHOW	 
+	MVI C,81H	 
+	CPI 03H	; DECR
+	JZ SHOW
+
+; ================== ΕΛΕΓΧΟΣ ΓΡΑΜΜΗΣ 3 =====================
+LINE3:	MVI A,F7H
+	STA 2800H	
+	LDA 1800H	 
+	ANI 07H		
+
+	MVI C,01H	; 1
+	CPI 06H	
+	JZ SHOW	
+	MVI C,02H	; 2
+	CPI 05H	
+	JZ SHOW	 
+	MVI C,03H	; 3
+	CPI 03H	
+	JZ SHOW
+
+; ================== ΕΛΕΓΧΟΣ ΓΡΑΜΜΗΣ 4 =====================
+LINE4:	MVI A,EFH
+	STA 2800H	
+	LDA 1800H	 
+	ANI 07H		
+
+	MVI C,04H
+	CPI 06H	; 4
+	JZ SHOW
+	MVI C,05H
+	CPI 05H	; 5
+	JZ SHOW
+	MVI C,06H
+	CPI 03H	; 6
+	JZ SHOW
+
+; ================== ΕΛΕΓΧΟΣ ΓΡΑΜΜΗΣ 5 =====================
+LINE5:	MVI A,DFH
+	STA 2800H	
+	LDA 1800H	 
+	ANI 07H		
+
+	MVI C,07H
+	CPI 06H	; 7
+	JZ SHOW
+	MVI C,08H
+	CPI 05H	; 8
+	JZ SHOW
+	MVI C,09H
+	CPI 03H	; 9
+	JZ SHOW
+; ================== ΕΛΕΓΧΟΣ ΓΡΑΜΜΗΣ 6 =====================
+LINE6:	MVI A,BFH
+	STA 2800H	
+	LDA 1800H	 
+	ANI 07H		
+
+	MVI C,0AH
+	CPI 06H	; A
+	JZ SHOW
+	MVI C,0BH
+	CPI 05H	; B
+	JZ SHOW
+	MVI C,0CH
+	CPI 03H	; C
+	JZ SHOW
+
+; ================== ΕΛΕΓΧΟΣ ΓΡΑΜΜΗΣ 7 =====================
+LINE7:	MVI A,7FH
+	STA 2800H	
+	LDA 1800H	 
+	ANI 07H		
+
+	MVI C,0DH
+	CPI 06H	; D
+	JZ SHOW
+	MVI C,0EH
+	CPI 05H	; E
+	JZ SHOW
+	MVI C,0FH
+	CPI 03H	; F
+	JZ SHOW
+
+	JMP START	; αν δεν πατήθηκε κουμπί, επανάλαβε τους ελέγχους
+
+; ======= ΠΡΟΩΘΗΣΗ ΚΩΔΙΚΟΥ ΣΤA 7-SEGMENT DISPLAY ===========
+SHOW:	LXI H,0A04H		; ετοιμάζουμε τη θέση 0Α04Η
+	MOV A,C		; κωδικός --> Α
+	ANI 0FH		; κρατάμε τα 4 LSBs 
+	MOV M,A		; τα βάζουμε στη θέση 0A04H
+				; δηλ. στο πέμπτο ψηφίο των 7-segment display
+
+	INX H			; επόμενη θέση μνήμης
+	MOV A,C		
+	ANI F0H		; κρατάμε τα 4 MSBs
+	RLC
+	RLC			; τα κάνουμε LSBs
+	RLC
+	RLC	
+	MOV M,A		; τα αποθηκεύουμε στο έκτο (αριτερότερο)
+				; ψηφίο των 7-segment display
+	
+	LXI D,0A00H		; μετακίνηση του block 0A00H - 0A05H
+				; στο σημείο που διαβάζει η DCD
+	CALL STDM	
+	CALL DCD		; απεικόνιση
+
+	JMP START		; επανάληψη
+
+	END
