@@ -10,4 +10,4 @@ This repository contains questions and solutions, including:
 
 to the Microcomputer Systems projects held by **NTUA** during the **2020 spring semester of the ECE undergraduate course**.
 
-tl;dr **The setX-exX** files were renamed before upload, so in the reports their name is **groupX.exX**
+tl;dr **The setX-exY.ZZZ** files were renamed before upload, so in the reports their name is **groupX.exY.ZZZ**
