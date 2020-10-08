@@ -5,4 +5,5 @@ For the codes to run, it is necessary to include **MACROS.asm** file, while it i
  - 8086 assembly codes, involving:
     - basic arithmetic operations
     - binary, octal, decimal, hexadecimal conversions
+    - ascii codes
     - IO operations
