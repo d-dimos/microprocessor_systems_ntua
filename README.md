@@ -1,8 +1,8 @@
 # Microcomputer Systems
 
-This repository contains exercise sets:
+This repository contains:
 
   - questions and
   - solutions
 
-to the Microcomputer Systems lecture series held by NTUA during the 2020 spring semester of the ECE undergraduate course.
+to the Microcomputer Systems exercise sets held by NTUA during the 2020 spring semester of the ECE undergraduate course.
