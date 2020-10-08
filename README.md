@@ -3,7 +3,7 @@
 This repository contains questions and solutions, including:
 
   - theoretical construction and explanation of **basic microarchitecture structures**
-  - basic logical circuits described by **Verilog** 
+  - basic logical circuits described with **Verilog** 
   - **Intel 8085** microprocessor exercises in **assembly language** 
   - **Intel 8086** microprocessor exercises in **assembly language**
   - **AVR ATmega16** microprocessor exercises in **assembly** and **C languages**
