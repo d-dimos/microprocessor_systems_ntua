@@ -1,4 +1,4 @@
-# Microcomputer Systems
+# Microprocessor Systems
 
 This repository contains questions and solutions, including:
 
