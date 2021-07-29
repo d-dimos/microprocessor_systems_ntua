@@ -9,5 +9,3 @@ This repository contains questions and solutions, including:
   - **AVR ATmega16** microprocessor exercises in **assembly** and **C languages**
 
 to the Microprocessor Systems projects held by **NTUA** during the **6th semester (Spring 2020) of the ECE undergraduate course**.
-
-tl;dr **The setX-exY.ZZZ** files were renamed before upload, so in the reports their name is **groupX.exY.ZZZ**
